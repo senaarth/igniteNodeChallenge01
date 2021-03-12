@@ -72,7 +72,9 @@ app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
 });
 
 app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  request.user.todos.splice((todo) => todo.id === request.params.id, 1);
+
+  return response.status(201).send();
 });
 
 module.exports = app;
