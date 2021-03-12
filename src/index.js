@@ -64,7 +64,11 @@ app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
 });
 
 app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const toDo = request.user.todos.find((todo) => todo.id === request.params.id);
+
+  toDo.done = true;
+
+  return response.status(201).send();
 });
 
 app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
