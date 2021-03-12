@@ -1,7 +1,7 @@
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 
@@ -13,8 +13,8 @@ const users = [];
 function checksExistsUserAccount(request, response, next) {
   const user = users.find((user) => user.username === request.headers.username);
 
-  if ( !user ) {
-    return response.status(400).json({ error: "user not found"});
+  if (!user) {
+    return response.status(400).json({ error: "user not found" });
   }
 
   request.user = user;
@@ -22,46 +22,52 @@ function checksExistsUserAccount(request, response, next) {
   return next();
 }
 
-app.post('/users', (request, response) => {
+app.post("/users", (request, response) => {
   const { name, username } = request.body;
 
   users.push({
     id: uuidv4(),
     name,
     username,
-    todos: []
+    todos: [],
   });
 
   return response.status(201).send();
 });
 
-app.get('/todos', checksExistsUserAccount, (request, response) => {
+app.get("/todos", checksExistsUserAccount, (request, response) => {
   return response.json(request.user.todos);
 });
 
-app.post('/todos', checksExistsUserAccount, (request, response) => {
+app.post("/todos", checksExistsUserAccount, (request, response) => {
   const { title, deadline } = request.body;
-  
+
   request.user.todos.push({
     id: uuidv4(),
     title,
     deadline: new Date(deadline),
     done: false,
-    created_at: new Date()
+    created_at: new Date(),
   });
 
   return response.status(201).send();
 });
 
-app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
+app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
+  const { title, deadline } = request.body;
+  const toDo = request.user.todos.find((todo) => todo.id === request.params.id);
+
+  toDo.title = title;
+  toDo.deadline = new Date(deadline);
+
+  return response.status(201).send();
+});
+
+app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
   // Complete aqui
 });
 
-app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
-});
-
-app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
+app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
   // Complete aqui
 });
 
